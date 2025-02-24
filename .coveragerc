@@ -1,0 +1,8 @@
+[coverage:run]
+branch = True
+source =
+    .
+
+[coverage:omit]
+# Exclude test files from the coverage report
+test_*.py
