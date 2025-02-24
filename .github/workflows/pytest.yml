@@ -41,11 +41,10 @@ jobs:
           
           if [ -z "$TEST_FILES" ]; then
             echo "No test files found, skipping coverage check."
-            echo "skip=false" >> $GITHUB_ENV
+            echo "run_tests=false" >> $GITHUB_ENV
           else
             echo "Test files found, running coverage check."
             echo "run_tests=true" >> $GITHUB_ENV
-          fi
 
       - name: Run Pytest with Coverage Check
         if: env.run_tests == 'true'
