@@ -50,4 +50,4 @@ jobs:
       - name: Run Pytest with Coverage Check
         if: env.run_tests == 'true'
         run: |
-          python -m pytest --cov=./ --cov-config=.coveragerc --cov-fail-under=70 --cov-omit='*/test_*.py'
+          python -m pytest --cov=./ --cov-config=.coveragerc --cov-fail-under=70
