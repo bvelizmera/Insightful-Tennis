@@ -1,6 +1,8 @@
 name: Run Pytest with Coverage Check
 
-on: [push, workflow_dispatch, pull_request]
+on:
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   pytest:
@@ -13,7 +15,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.12'
 
       - name: Cache Python dependencies
         uses: actions/cache@v3
@@ -45,6 +47,7 @@ jobs:
           else
             echo "Test files found, running coverage check."
             echo "run_tests=true" >> $GITHUB_ENV
+          fi
 
       - name: Run Pytest with Coverage Check
         if: env.run_tests == 'true'
