@@ -8,6 +8,7 @@ from selenium.webdriver.common.by import By
 import time
 
 def load_match_webpage(year:int, match_number:str):
+    """This function simulates acccessing the webpage of a Roland garros match."""
     options = Options()
     options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
@@ -32,7 +33,7 @@ def load_match_webpage(year:int, match_number:str):
 
     match_stats = get_match_stats(soup_stats)
     for match in match_stats:
-        print(get_section_match_stats(match))
+        get_section_match_stats(match)
     
 
     # back_stats_button = driver.find_element(By.XPATH, "//*[@id='MatchStats']/section/header/button")
@@ -50,6 +51,7 @@ def load_match_webpage(year:int, match_number:str):
 
 
 def get_player_name(soup_name, class_name) -> str:
+    """Returns player name by extracting it using the class name."""
     player = soup_name.find("div", class_=class_name)
     player_details = player.find("div", class_="player-details")
     player_data= player_details.find("span", class_="name")
@@ -59,12 +61,45 @@ def get_player_name(soup_name, class_name) -> str:
     return player_name
 
 def get_match_stats(soup_name):
+    """Returns all the sections with important stats from the match. Service, breakpoints, receiving points, points breakdown."""
+    
     match_stats = soup_name.find_all("div", class_="rfk-stat-section")
     return match_stats
 
 def get_section_match_stats(soup_name):
-    section_name = soup_name.find("div", {"class": "rfk-heading"}).text.strip()
-    return section_name
+    section = {}
+    section_title = soup_name.find("div", {"class": "rfk-heading"}).text.strip()
+    subsections = soup_name.find_all("div", class_="rfk-statTileWrapper")
+    for subsection in subsections:
+        subsection_title = subsection.find("div",  {"class": "rfk-labelbold rfk-cursorNone"}).text.strip()
+
+        player_1 = ""
+        player_2 = ""
+        if subsection.find("div", class_="rfk-label rfk-player1 rfk-non-speed"):
+            player_1 = subsection.find("div", {"class": "rfk-label rfk-player1 rfk-non-speed"}).text.strip()
+        
+        if subsection.find("div", class_="rfk-labelBold rfk-player1 rfk-non-speed"):
+            player_1 = subsection.find("div", {"class": "rfk-labelBold rfk-player1 rfk-non-speed"}).text.strip()
+
+        if subsection.find("div", class_="rfk-label rfk-player2 rfk-non-speed"):
+            player_2 = subsection.find("div", {"class": "rfk-label rfk-player2 rfk-non-speed"}).text.strip()
+
+        if subsection.find("div", class_="rfk-labelBold rfk-player2 rfk-non-speed"):
+            player_2 = subsection.find("div", {"class": "rfk-labelBold rfk-player2 rfk-non-speed"}).text.strip()
+        
+        if subsection.find("div", class_="rfk-speedDiv1"):
+            player_1 = subsection.find("div", {"class": "rfk-speedDiv1"}).text.strip()
+        
+        if subsection.find("div", class_="rfk-speedDiv2"):
+            player_2 = subsection.find("div", {"class": "rfk-speedDiv2"}).text.strip()
+        
+        print(f"{subsection_title} : player 1 - {player_1}, player 2 - {player_2}")
+
+        
+
+        
+
+    return section
 
 
     
