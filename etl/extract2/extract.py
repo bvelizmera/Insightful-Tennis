@@ -6,11 +6,12 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 import time
+from collections import defaultdict
 
 def load_match_webpage(year:int, match_number:str):
     """This function simulates acccessing the webpage of a Roland garros match."""
     options = Options()
-    options.add_argument("--headless=new")
+    # options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     driver = webdriver.Chrome(options=options)
@@ -32,22 +33,29 @@ def load_match_webpage(year:int, match_number:str):
 
     match_stats = get_match_stats(soup_stats)
     match_stats_dict = {}
+    player_stats = {}
     for match in match_stats:
         section_title = match.find("div", {"class": "rfk-heading"}).text.strip().upper()
-        match_stats_dict[section_title] = get_section_match_stats(match, player_1, player_2)
-    
-    print(match_stats_dict)
+        match_stats_dict[section_title] = get_section_match_stats(match)[0]
+        player_stats[player_1] = match_stats_dict
+        match_stats_dict[section_title] = get_section_match_stats(match)[1]
+        player_stats[player_2] = match_stats_dict   
+    print(player_stats)
     
 
-    # back_stats_button = driver.find_element(By.XPATH, "//*[@id='MatchStats']/section/header/button")
-    # back_stats_button.click()
-    # time.sleep(5)
-    # rally_stats_button = driver.find_element(By.XPATH, "//*[@id='RallyAnalysis']/section/footer/div")
-    # rally_stats_button.click()
-    # time.sleep(5)
+    back_stats_button = driver.find_element(By.XPATH, "//*[@id='MatchStats']/section/header/button")
+    back_stats_button.click()
+    time.sleep(5)
+    rally_stats_button = driver.find_element(By.XPATH, "//*[@id='RallyAnalysis']/section/footer/div")
+    rally_stats_button.click()
+    time.sleep(5)
+    rallys_websource = driver.page_source
+    rally_stats = BeautifulSoup(rallys_websource, "html.parser")
+    get_section_rally_stats(rally_stats)
+    time.sleep(60)
     # back_rally_button = driver.find_element(By.XPATH, "//*[@id='RallyAnalysis']/section/header/button")
     # back_rally_button.click()
-    driver.quit()
+    # driver.quit()
 
     return driver
 
@@ -70,9 +78,7 @@ def get_match_stats(soup_name):
     
     return match_stats
 
-def get_section_match_stats(soup_name, name_1, name_2):
-    section = {}
-    section_title = soup_name.find("div", {"class": "rfk-heading"}).text.strip()
+def get_section_match_stats(soup_name):
     player_1_data = {}
     player_2_data = {}
     subsections = soup_name.find_all("div", class_="rfk-statTileWrapper")
@@ -104,47 +110,22 @@ def get_section_match_stats(soup_name, name_1, name_2):
         if subsection.find("div", class_="rfk-speedDiv2"):
             player_2 = subsection.find("div", {"class": "rfk-speedDiv2"}).text.strip()
             player_2_data[subsection_title] = player_2
-            
+
+    return [player_1_data, player_2_data]
+
+
+def get_section_rally_stats(soup_name):
+    """Returns stats from the rally section on the webpage."""
+    player_1_data = {}
+    player_2_data = {}
+    total_points_won = soup_name.find("div", class_= "label label-team1")
+    print(total_points_won)
+
+
+
+    
     
 
-        # print(f"{subsection_title} : player 1 - {player_1}, player 2 - {player_2}")
-
-        
-
-        
-
-    return [{name_1: player_1_data}, {name_2 : player_2_data}]
-
-
-    
-
-
-
-
-# def get_match_data_atp_infosys_stats(year:int, match_number:str):
-#     """Returns connection to a specific match."""
-#     BASE_URL = "https://www.rolandgarros.com/en-us/matches/"
-#     response = requests.get(f"{BASE_URL}{year}/SM{match_number}")
-
-#     if response.status_code == 200:
-#         found_matches = 0
-#         soup = BeautifulSoup(response.text, "html.parser")
-#         if soup.find("h3", class_="error-view-message"):
-#             return False
-        
-#         match_data = soup.find("div", attrs={"data-v-e932b888": True})
-
-#         if match_data:
-#             return match_data
-
-            
-
-        
-
-        
-    
-    # if 400 <= response.status_code < 500:
-    #     print("No")
 
 def get_year_data():
     found_matches = 0
@@ -166,6 +147,6 @@ def get_year_data():
 if __name__ == "__main__":
     # match_data = get_match_data_atp_infosys_stats(2018, "127")
     # match_stats = match_data.find("div", class_="rfk-stat-section")
-    get_year_data()
+    # get_year_data()
 
     load_match_webpage(2018,"001")
