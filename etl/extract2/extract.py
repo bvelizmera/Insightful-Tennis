@@ -6,12 +6,13 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 import time
-from collections import defaultdict
+from datetime import datetime
+import json
 
 def load_match_webpage(year:int, match_number:str):
     """This function simulates acccessing the webpage of a Roland garros match."""
     options = Options()
-    # options.add_argument("--headless=new")
+    options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     driver = webdriver.Chrome(options=options)
@@ -26,6 +27,7 @@ def load_match_webpage(year:int, match_number:str):
     stats_button = driver.find_element(By.XPATH, "//*[@id='MatchStats']/section/footer/div")
     stats_button.click()
     time.sleep(2)
+
     stats_websource = driver.page_source
     soup_stats = BeautifulSoup(stats_websource, "html.parser")
     player_1 = get_player_name(soup_stats, "team team1")
@@ -39,8 +41,7 @@ def load_match_webpage(year:int, match_number:str):
         match_stats_dict[section_title] = get_section_match_stats(match)[0]
         player_stats[player_1] = match_stats_dict
         match_stats_dict[section_title] = get_section_match_stats(match)[1]
-        player_stats[player_2] = match_stats_dict   
-    print(player_stats)
+        player_stats[player_2] = match_stats_dict
     
 
     back_stats_button = driver.find_element(By.XPATH, "//*[@id='MatchStats']/section/header/button")
@@ -51,13 +52,18 @@ def load_match_webpage(year:int, match_number:str):
     time.sleep(5)
     rallys_websource = driver.page_source
     rally_stats = BeautifulSoup(rallys_websource, "html.parser")
-    get_section_rally_stats(rally_stats)
-    time.sleep(60)
-    # back_rally_button = driver.find_element(By.XPATH, "//*[@id='RallyAnalysis']/section/header/button")
-    # back_rally_button.click()
-    # driver.quit()
+    player_1_stats = player_stats[player_1].copy()
+    player_2_stats = player_stats[player_2].copy()
+    rally_points_distribution = get_section_rally_stats(rally_stats)
+    player_1_stats["RALLY POINTS DISTRIBUTION"] = rally_points_distribution[0]
+    player_2_stats["RALLY POINTS DISTRIBUTION"] = rally_points_distribution[1]
+    player_stats_rallies = {}
+    player_stats_rallies[player_1] = player_1_stats
+    player_stats_rallies[player_2] = player_2_stats    
+    print(player_stats_rallies)
+    
+    return player_stats_rallies
 
-    return driver
 
 
 
@@ -118,8 +124,33 @@ def get_section_rally_stats(soup_name):
     """Returns stats from the rally section on the webpage."""
     player_1_data = {}
     player_2_data = {}
-    total_points_won = soup_name.find("div", class_= "label label-team1")
-    print(total_points_won)
+    player_1_data["Total Points Won"] = soup_name.find("span", {"class":"tile team1"}).text.strip()
+    player_2_data["Total Points Won"] = soup_name.find("span", {"class":"tile team2"}).text.strip()
+
+    rally_sections = soup_name.find("div", class_="rallies")
+
+    subsections = rally_sections.find_all("div", {"class" : "rallyCard-wrapper undefined highligted"})
+
+    for subsection in subsections:
+        subsection_title = subsection.find("span", {"class" : "rally-name-label"}).text.strip()
+        
+        if subsection.find("span", class_="tile team1"):
+            player_1_data[subsection_title] = subsection.find("span", {"class" : "tile team1"}).text.strip()
+        
+        if subsection.find("span", class_="tile team2"):
+            player_2_data[subsection_title] = subsection.find("span", {"class" : "tile team2"}).text.strip()
+    
+    return [player_1_data, player_2_data]
+
+
+def get_overall_score(soup_name):
+
+    score = soup_name.find("div", class_="scoring block")
+    print(len(score))
+
+
+        
+
 
 
 
@@ -147,6 +178,4 @@ def get_year_data():
 if __name__ == "__main__":
     # match_data = get_match_data_atp_infosys_stats(2018, "127")
     # match_stats = match_data.find("div", class_="rfk-stat-section")
-    # get_year_data()
-
-    load_match_webpage(2018,"001")
+    get_year_data()

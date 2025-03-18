@@ -1,0 +1,74 @@
+{
+    "R. Nadal": {
+        "SERVICE": {
+            "Aces": "2",
+            "Double faults": "1",
+            "First serve": "49/65 75%",
+            "Win on 1st serve": "28/49 57%",
+            "Win on 2nd serve": "8/16 50%",
+            "Max Speed": "212 km/h131 mph",
+            "1st Serve Average Speed": "195 km/h121 mph",
+            "2nd Serve Average Speed": "154 km/h95 mph"
+        },
+        "RECEIVING POINTS": {
+            "Receiving points won": "25/83 30%",
+            "Receiving Points won on 1st serve": "14/51 27%",
+            "Receiving Points won on 2nd serve": "11/32 34%"
+        },
+        "BREAK POINTS": {
+            "Break Point Opportunities": "7/83 8%",
+            "Break Points Converted": "0/7 0%",
+            "Number of games with break points to be converted": "3/13 23%"
+        },
+        "POINTS BREAKDOWN": {
+            "Total points won": "61",
+            "Winners": "20",
+            "Forced errors": "20",
+            "Unforced errors": "32",
+            "Net points won": "13/18 72%",
+            "Love Games": "4"
+        },
+        "RALLY POINTS DISTRIBUTION": {
+            "Total Points Won": "87",
+            "Short Rallies": "48",
+            "Medium Rallies": "19",
+            "Long Rallies": "18"
+        }
+    },
+    "JM. Del Potro": {
+        "SERVICE": {
+            "Aces": "2",
+            "Double faults": "1",
+            "First serve": "49/65 75%",
+            "Win on 1st serve": "28/49 57%",
+            "Win on 2nd serve": "8/16 50%",
+            "Max Speed": "212 km/h131 mph",
+            "1st Serve Average Speed": "195 km/h121 mph",
+            "2nd Serve Average Speed": "154 km/h95 mph"
+        },
+        "RECEIVING POINTS": {
+            "Receiving points won": "25/83 30%",
+            "Receiving Points won on 1st serve": "14/51 27%",
+            "Receiving Points won on 2nd serve": "11/32 34%"
+        },
+        "BREAK POINTS": {
+            "Break Point Opportunities": "7/83 8%",
+            "Break Points Converted": "0/7 0%",
+            "Number of games with break points to be converted": "3/13 23%"
+        },
+        "POINTS BREAKDOWN": {
+            "Total points won": "61",
+            "Winners": "20",
+            "Forced errors": "20",
+            "Unforced errors": "32",
+            "Net points won": "13/18 72%",
+            "Love Games": "4"
+        },
+        "RALLY POINTS DISTRIBUTION": {
+            "Total Points Won": "61",
+            "Short Rallies": "31",
+            "Medium Rallies": "13",
+            "Long Rallies": "14"
+        }
+    }
+}

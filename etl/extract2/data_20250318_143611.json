@@ -1,0 +1,74 @@
+{
+    "M. Cecchinato": {
+        "SERVICE": {
+            "Aces": "6",
+            "Double faults": "2",
+            "First serve": "63/94 67%",
+            "Win on 1st serve": "52/63 83%",
+            "Win on 2nd serve": "19/31 61%",
+            "Max Speed": "220 km/h136 mph",
+            "1st Serve Average Speed": "180 km/h111 mph",
+            "2nd Serve Average Speed": "156 km/h96 mph"
+        },
+        "RECEIVING POINTS": {
+            "Receiving points won": "46/114 40%",
+            "Receiving Points won on 1st serve": "35/92 38%",
+            "Receiving Points won on 2nd serve": "11/22 50%"
+        },
+        "BREAK POINTS": {
+            "Break Point Opportunities": "9/114 8%",
+            "Break Points Converted": "4/9 44%",
+            "Number of games with break points to be converted": "7/16 44%"
+        },
+        "POINTS BREAKDOWN": {
+            "Total points won": "117",
+            "Winners": "37",
+            "Forced errors": "41",
+            "Unforced errors": "26",
+            "Net points won": "18/28 64%",
+            "Love Games": "6"
+        },
+        "RALLY POINTS DISTRIBUTION": {
+            "Total Points Won": "91",
+            "Short Rallies": "57",
+            "Medium Rallies": "20",
+            "Long Rallies": "12"
+        }
+    },
+    "D. Thiem": {
+        "SERVICE": {
+            "Aces": "6",
+            "Double faults": "2",
+            "First serve": "63/94 67%",
+            "Win on 1st serve": "52/63 83%",
+            "Win on 2nd serve": "19/31 61%",
+            "Max Speed": "220 km/h136 mph",
+            "1st Serve Average Speed": "180 km/h111 mph",
+            "2nd Serve Average Speed": "156 km/h96 mph"
+        },
+        "RECEIVING POINTS": {
+            "Receiving points won": "46/114 40%",
+            "Receiving Points won on 1st serve": "35/92 38%",
+            "Receiving Points won on 2nd serve": "11/22 50%"
+        },
+        "BREAK POINTS": {
+            "Break Point Opportunities": "9/114 8%",
+            "Break Points Converted": "4/9 44%",
+            "Number of games with break points to be converted": "7/16 44%"
+        },
+        "POINTS BREAKDOWN": {
+            "Total points won": "117",
+            "Winners": "37",
+            "Forced errors": "41",
+            "Unforced errors": "26",
+            "Net points won": "18/28 64%",
+            "Love Games": "6"
+        },
+        "RALLY POINTS DISTRIBUTION": {
+            "Total Points Won": "117",
+            "Short Rallies": "68",
+            "Medium Rallies": "33",
+            "Long Rallies": "13"
+        }
+    }
+}
