@@ -8,6 +8,10 @@ from selenium.webdriver.common.by import By
 import time
 from datetime import datetime
 import json
+import os
+import time
+import random
+
 
 def load_match_webpage(year:int, match_number:str):
     """This function simulates acccessing the webpage of a Roland garros match."""
@@ -33,7 +37,7 @@ def load_match_webpage(year:int, match_number:str):
     formatted_score = get_score_into_final_format(score)
     stats_button = driver.find_element(By.XPATH, "//*[@id='MatchStats']/section/footer/div")
     stats_button.click()
-    time.sleep(2)
+    time.sleep(3)
     stats_websource = driver.page_source
     soup_stats = BeautifulSoup(stats_websource, "html.parser")
     match_stats = get_match_stats(soup_stats)
@@ -48,18 +52,17 @@ def load_match_webpage(year:int, match_number:str):
 
     back_stats_button = driver.find_element(By.XPATH, "//*[@id='MatchStats']/section/header/button")
     back_stats_button.click()
-    time.sleep(5)
+    time.sleep(3)
     rally_stats_button = driver.find_element(By.XPATH, "//*[@id='RallyAnalysis']/section/footer/div")
     rally_stats_button.click()
-    time.sleep(5)
+    time.sleep(3)
     rallys_websource = driver.page_source
     rally_stats = BeautifulSoup(rallys_websource, "html.parser")
     player_1_stats = player_stats[player_1].copy()
     player_2_stats = player_stats[player_2].copy()
     rally_points_distribution = get_section_rally_stats(rally_stats)
-
     player_1_stats["RALLY POINTS DISTRIBUTION"] = rally_points_distribution[0]
-    player_1_stats["Score"] = score[0]
+    player_1_stats["Games"] = score[0]
     if player_1 == winner:
         player_1_stats["Winner"] = True
     
@@ -67,7 +70,7 @@ def load_match_webpage(year:int, match_number:str):
         player_1_stats["Winner"] = False
 
     player_2_stats["RALLY POINTS DISTRIBUTION"] = rally_points_distribution[1]
-    player_2_stats["Score"] = score[1]
+    player_2_stats["Games"] = score[1]
     if player_2 == winner:
         player_2_stats["Winner"] = True
     
@@ -77,8 +80,10 @@ def load_match_webpage(year:int, match_number:str):
     player_stats_rallies = {}
     player_stats_rallies[player_1] = player_1_stats
     player_stats_rallies[player_2] = player_2_stats    
+
+    driver.quit()
     
-    return [player_stats_rallies, formatted_score]
+    return {"Score":formatted_score, "Details": player_stats_rallies}
 
 
 
@@ -97,11 +102,16 @@ def get_match_stats(soup_name):
     return match_stats
 
 def get_section_match_stats(soup_name):
+    """Retrieves data from match stats."""
     player_1_data = {}
     player_2_data = {}
     subsections = soup_name.find_all("div", class_="rfk-statTileWrapper")
     for subsection in subsections:
-        subsection_title = subsection.find("div",  {"class": "rfk-labelBold rfk-cursorNone"}).text.strip()
+        if subsection.find("div",  class_= "rfk-labelbold rfk-cursorNone"):
+            subsection_title = subsection.find("div",  {"class": "rfk-labelbold rfk-cursorNone"}).text.strip()
+
+        if subsection.find("div", class_= "rfk-labelbold rfk-cursor"):
+            subsection_title = subsection.find("div",  {"class": "rfk-labelbold rfk-cursor"}).text.strip()
 
         player_1 = ""
         player_2 = ""
@@ -216,30 +226,67 @@ def get_score_into_final_format(score:list) -> list:
   
     formatted_scores = [f"{s1}-{s2}" for s1, s2 in zip(*score)]
 
-    print(formatted_scores)
+    return formatted_scores
 
 
 
-def get_year_data():
-    found_matches = 0
 
-    years = [number for number in range(2018)]
+def get_year_data(max_retries=5, retry_delay=3):
+    """
+    Retrieve match data with retry logic, handle errors, and save yearly data to individual JSON files.
+    """
+    years = [2018, 2019]  # Add your desired years here
     matches = [f"{match_num:03d}" for match_num in range(1, 3)]
-    match_dict = {}
 
     for year in years:
+        matches_dict = {}
+
         for match in matches:
             match_code = f"SM{match}"
-            match_dict[match_code] = load_match_webpage(year, match)
-    
-    return found_matches
+            
+            # Retry logic
+            success = False
+            attempts = 0
+            
+            while not success and attempts < max_retries:
+                try:
+                    print(f"Fetching {match_code} for {year} (Attempt {attempts + 1}/{max_retries})...")
+                    
+                    # Attempt to load match data
+                    match_data = load_match_webpage(year, match)
+                    
+                    # If successful, store the data
+                    matches_dict[match_code] = match_data
+                    print(f"✅ Successfully retrieved {match_code} for {year}")
+                    
+                    success = True  # Exit retry loop after successful fetch
+
+                except Exception as e:
+                    attempts += 1
+                    print(f"❌ Error fetching {match_code}: {e}")
+                    
+                    if attempts < max_retries:
+                        wait_time = retry_delay + random.uniform(0, 2)  # Add jitter for retry
+                        print(f"Retrying in {wait_time:.2f} seconds...")
+                        time.sleep(wait_time)
+                    else:
+                        print(f"⚠️ Max retries reached. Skipping {match_code}")
+                        matches_dict[match_code] = {"error": str(e)}
+
+        # Save the year's data into its own JSON file
+        year_filename = f"RG_{year}.json"
+        save_to_json(matches_dict, year_filename)
+        print(f"📁 Data for {year} saved to {year_filename}")
+
+
+def save_to_json(data, filename):
+    """Save dictionary to a JSON file."""
+    with open(filename, "w") as f:
+        json.dump(data, f, indent=4)
+    print(f"✅ Data saved to {filename}")
+
 
     
 if __name__ == "__main__":
-    # match_data = get_match_data_atp_infosys_stats(2018, "127")
-    # match_stats = match_data.find("div", class_="rfk-stat-section")
-    # matches_recorded = get_year_data()
-
-    # print(matches_recorded)
-
-    load_match_webpage(2018, "003")
+    # get_year_data()
+    print(load_match_webpage(2019, "002"))
