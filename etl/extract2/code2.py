@@ -14,6 +14,7 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 import time
+import asyncio
 
 def load_match_webpage(year: int, match_number: str):
     """Accesses the webpage of a Roland Garros match and scrapes the data."""
