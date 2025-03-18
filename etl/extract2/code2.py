@@ -8,13 +8,11 @@ from selenium.webdriver.common.by import By
 import time
 from datetime import datetime
 import json
-import os
 import time
 import random
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
-from bs4 import BeautifulSoup
 import time
 
 def load_match_webpage(year: int, match_number: str):
