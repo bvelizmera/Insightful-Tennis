@@ -8,7 +8,7 @@ from selenium.webdriver.common.by import By
 import time
 from datetime import datetime
 import json
-
+import os
 def load_match_webpage(year:int, match_number:str):
     """This function simulates acccessing the webpage of a Roland garros match."""
     options = Options()
@@ -58,7 +58,7 @@ def load_match_webpage(year:int, match_number:str):
     player_2_stats = player_stats[player_2].copy()
     rally_points_distribution = get_section_rally_stats(rally_stats)
     player_1_stats["RALLY POINTS DISTRIBUTION"] = rally_points_distribution[0]
-    player_1_stats["Score"] = score[0]
+    player_1_stats["Games"] = score[0]
     if player_1 == winner:
         player_1_stats["Winner"] = True
     
@@ -66,7 +66,7 @@ def load_match_webpage(year:int, match_number:str):
         player_1_stats["Winner"] = False
 
     player_2_stats["RALLY POINTS DISTRIBUTION"] = rally_points_distribution[1]
-    player_2_stats["Score"] = score[1]
+    player_2_stats["Games"] = score[1]
     if player_2 == winner:
         player_2_stats["Winner"] = True
     
@@ -76,8 +76,10 @@ def load_match_webpage(year:int, match_number:str):
     player_stats_rallies = {}
     player_stats_rallies[player_1] = player_1_stats
     player_stats_rallies[player_2] = player_2_stats    
+
+    driver.quit()
     
-    return player_stats_rallies
+    return {"Score":formatted_score, "Details": player_stats_rallies}
 
 
 
@@ -222,20 +224,39 @@ def get_score_into_final_format(score:list) -> list:
 def get_year_data():
     found_matches = 0
 
-    years = [number for number in range(2018, 2020)]
-    matches = [f"{match_num:03d}" for match_num in range(1, 128)]
+    years = [number for number in range(2018,2019)]
+    matches = [f"{match_num:03d}" for match_num in range(1, 3)]
+    matches_dict = {}
 
     for year in years:
         for match in matches:
-            load_match_webpage(year, match)
-            found_matches += 1
+            match_code = f"SM{match}"
+            match_data = load_match_webpage(year, match)
+            matches_dict[match_code] = match_data
     
-    return found_matches
+    save_to_json(matches_dict, "matches_data.json")
+
+    return matches_dict
+    
+
+
+
+def save_to_json(data, filename):
+    """Save dictionary to a JSON file."""
+    if os.path.exists(filename):
+
+        with open(filename, "r") as f:
+            existing_data = json.load(f)
+        existing_data.update(data)
+    else:
+        existing_data = data
+
+    with open(filename, "w") as f:
+        json.dump(existing_data, f, indent=4)
+    print(f"Data saved to {filename}")
+
+
 
     
 if __name__ == "__main__":
-    # match_data = get_match_data_atp_infosys_stats(2018, "127")
-    # match_stats = match_data.find("div", class_="rfk-stat-section")
-    # get_year_data()
-
-    load_match_webpage(2018, "003")
+    get_year_data()
