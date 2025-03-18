@@ -9,6 +9,10 @@ import time
 from datetime import datetime
 import json
 import os
+import time
+import random
+
+
 def load_match_webpage(year:int, match_number:str):
     """This function simulates acccessing the webpage of a Roland garros match."""
     options = Options()
@@ -23,7 +27,7 @@ def load_match_webpage(year:int, match_number:str):
     driver.get(response)
     button = driver.find_element(By.ID, "popin_tc_privacy_button")
     button.click()
-    time.sleep(3)
+    time.sleep(5)
     score_websource = driver.page_source
     score_soup = BeautifulSoup(score_websource, "html.parser")
     player_1 = get_player_name(score_soup, "pl-container team-a")
@@ -33,7 +37,7 @@ def load_match_webpage(year:int, match_number:str):
     formatted_score = get_score_into_final_format(score)
     stats_button = driver.find_element(By.XPATH, "//*[@id='MatchStats']/section/footer/div")
     stats_button.click()
-    time.sleep(2)
+    time.sleep(5)
     stats_websource = driver.page_source
     soup_stats = BeautifulSoup(stats_websource, "html.parser")
     match_stats = get_match_stats(soup_stats)
@@ -98,11 +102,12 @@ def get_match_stats(soup_name):
     return match_stats
 
 def get_section_match_stats(soup_name):
+    """Retrieves data from match stats."""
     player_1_data = {}
     player_2_data = {}
     subsections = soup_name.find_all("div", class_="rfk-statTileWrapper")
     for subsection in subsections:
-        subsection_title = subsection.find("div",  {"class": "rfk-labelbold rfk-cursorNone"}).text.strip()
+        subsection_title = subsection.find("div",  {"class": "rfk-labelBold rfk-cursorNone"}).text.strip()
 
         player_1 = ""
         player_2 = ""
@@ -221,42 +226,63 @@ def get_score_into_final_format(score:list) -> list:
 
 
 
-def get_year_data():
-    found_matches = 0
 
-    years = [number for number in range(2018,2019)]
-    matches = [f"{match_num:03d}" for match_num in range(1, 3)]
-    matches_dict = {}
+def get_year_data(max_retries=5, retry_delay=3):
+    """
+    Retrieve match data with retry logic, handle errors, and save yearly data to individual JSON files.
+    """
+    years = [2018]  # Add your desired years here
+    matches = [f"{match_num:03d}" for match_num in range(1, 128)]
 
     for year in years:
+        matches_dict = {}
+
         for match in matches:
             match_code = f"SM{match}"
-            match_data = load_match_webpage(year, match)
-            matches_dict[match_code] = match_data
-    
-    save_to_json(matches_dict, "matches_data.json")
+            
+            # Retry logic
+            success = False
+            attempts = 0
+            
+            while not success and attempts < max_retries:
+                try:
+                    print(f"Fetching {match_code} for {year} (Attempt {attempts + 1}/{max_retries})...")
+                    
+                    # Attempt to load match data
+                    match_data = load_match_webpage(year, match)
+                    
+                    # If successful, store the data
+                    matches_dict[match_code] = match_data
+                    print(f"✅ Successfully retrieved {match_code} for {year}")
+                    
+                    success = True  # Exit retry loop after successful fetch
 
-    return matches_dict
-    
+                except Exception as e:
+                    attempts += 1
+                    print(f"❌ Error fetching {match_code}: {e}")
+                    
+                    if attempts < max_retries:
+                        wait_time = retry_delay + random.uniform(0, 2)  # Add jitter for retry
+                        print(f"Retrying in {wait_time:.2f} seconds...")
+                        time.sleep(wait_time)
+                    else:
+                        print(f"⚠️ Max retries reached. Skipping {match_code}")
+                        matches_dict[match_code] = {"error": str(e)}
 
+        # Save the year's data into its own JSON file
+        year_filename = f"RG_{year}.json"
+        save_to_json(matches_dict, year_filename)
+        print(f"📁 Data for {year} saved to {year_filename}")
 
 
 def save_to_json(data, filename):
     """Save dictionary to a JSON file."""
-    if os.path.exists(filename):
-
-        with open(filename, "r") as f:
-            existing_data = json.load(f)
-        existing_data.update(data)
-    else:
-        existing_data = data
-
     with open(filename, "w") as f:
-        json.dump(existing_data, f, indent=4)
-    print(f"Data saved to {filename}")
-
+        json.dump(data, f, indent=4)
+    print(f"✅ Data saved to {filename}")
 
 
     
 if __name__ == "__main__":
-    get_year_data()
+    # get_year_data()
+    print(load_match_webpage(2019, "001"))
