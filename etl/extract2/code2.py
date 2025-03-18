@@ -57,6 +57,7 @@ def load_match_webpage(year:int, match_number:str):
     player_1_stats = player_stats[player_1].copy()
     player_2_stats = player_stats[player_2].copy()
     rally_points_distribution = get_section_rally_stats(rally_stats)
+
     player_1_stats["RALLY POINTS DISTRIBUTION"] = rally_points_distribution[0]
     player_1_stats["Score"] = score[0]
     if player_1 == winner:
@@ -77,7 +78,7 @@ def load_match_webpage(year:int, match_number:str):
     player_stats_rallies[player_1] = player_1_stats
     player_stats_rallies[player_2] = player_2_stats    
     
-    return player_stats_rallies
+    return [player_stats_rallies, formatted_score]
 
 
 
@@ -100,7 +101,7 @@ def get_section_match_stats(soup_name):
     player_2_data = {}
     subsections = soup_name.find_all("div", class_="rfk-statTileWrapper")
     for subsection in subsections:
-        subsection_title = subsection.find("div",  {"class": "rfk-labelbold rfk-cursorNone"}).text.strip()
+        subsection_title = subsection.find("div",  {"class": "rfk-labelBold rfk-cursorNone"}).text.strip()
 
         player_1 = ""
         player_2 = ""
@@ -215,20 +216,21 @@ def get_score_into_final_format(score:list) -> list:
   
     formatted_scores = [f"{s1}-{s2}" for s1, s2 in zip(*score)]
 
-    return formatted_scores
+    print(formatted_scores)
 
 
 
 def get_year_data():
     found_matches = 0
 
-    years = [number for number in range(2018, 2020)]
-    matches = [f"{match_num:03d}" for match_num in range(1, 128)]
+    years = [number for number in range(2018)]
+    matches = [f"{match_num:03d}" for match_num in range(1, 3)]
+    match_dict = {}
 
     for year in years:
         for match in matches:
-            load_match_webpage(year, match)
-            found_matches += 1
+            match_code = f"SM{match}"
+            match_dict[match_code] = load_match_webpage(year, match)
     
     return found_matches
 
@@ -236,6 +238,8 @@ def get_year_data():
 if __name__ == "__main__":
     # match_data = get_match_data_atp_infosys_stats(2018, "127")
     # match_stats = match_data.find("div", class_="rfk-stat-section")
-    # get_year_data()
+    # matches_recorded = get_year_data()
+
+    # print(matches_recorded)
 
     load_match_webpage(2018, "003")

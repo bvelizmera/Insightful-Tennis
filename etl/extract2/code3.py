@@ -24,18 +24,15 @@ def load_match_webpage(year:int, match_number:str):
     button = driver.find_element(By.ID, "popin_tc_privacy_button")
     button.click()
     time.sleep(3)
-    score_websource = driver.page_source
-    score_soup = BeautifulSoup(score_websource, "html.parser")
-    player_1 = get_player_name(score_soup, "pl-container team-a")
-    player_2 = get_player_name(score_soup, "pl-container team-b")
-    winner = get_match_winner(score_soup)
-    score = get_overall_score(score_soup)
-    formatted_score = get_score_into_final_format(score)
     stats_button = driver.find_element(By.XPATH, "//*[@id='MatchStats']/section/footer/div")
     stats_button.click()
     time.sleep(2)
+
     stats_websource = driver.page_source
     soup_stats = BeautifulSoup(stats_websource, "html.parser")
+    player_1 = get_player_name(soup_stats, "team team1")
+    player_2 = get_player_name(soup_stats, "team team2")
+
     match_stats = get_match_stats(soup_stats)
     match_stats_dict = {}
     player_stats = {}
@@ -45,6 +42,7 @@ def load_match_webpage(year:int, match_number:str):
         player_stats[player_1] = match_stats_dict
         match_stats_dict[section_title] = get_section_match_stats(match)[1]
         player_stats[player_2] = match_stats_dict
+    
 
     back_stats_button = driver.find_element(By.XPATH, "//*[@id='MatchStats']/section/header/button")
     back_stats_button.click()
@@ -58,24 +56,13 @@ def load_match_webpage(year:int, match_number:str):
     player_2_stats = player_stats[player_2].copy()
     rally_points_distribution = get_section_rally_stats(rally_stats)
     player_1_stats["RALLY POINTS DISTRIBUTION"] = rally_points_distribution[0]
-    player_1_stats["Score"] = score[0]
-    if player_1 == winner:
-        player_1_stats["Winner"] = True
-    
-    else:
-        player_1_stats["Winner"] = False
-
     player_2_stats["RALLY POINTS DISTRIBUTION"] = rally_points_distribution[1]
-    player_2_stats["Score"] = score[1]
-    if player_2 == winner:
-        player_2_stats["Winner"] = True
-    
-    else:
-        player_2_stats["Winner"] = False
-
     player_stats_rallies = {}
     player_stats_rallies[player_1] = player_1_stats
     player_stats_rallies[player_2] = player_2_stats    
+    print(player_stats_rallies)
+
+    print(player_stats_rallies)
     
     return player_stats_rallies
 
@@ -84,8 +71,12 @@ def load_match_webpage(year:int, match_number:str):
 
 def get_player_name(soup_name, class_name) -> str:
     """Returns player name by extracting it using the class name."""
-    player = soup_name.find("div", class_= class_name)
-    player_name = player.find("div", {"class": "player-name"}).text.strip()
+    player = soup_name.find("div", class_=class_name)
+    player_details = player.find("div", class_="player-details")
+    player_data= player_details.find("span", class_="name")
+    player_name = player_data.find('a', {'class': 'player-details-anchor'}).text.strip()
+
+
     return player_name
 
 def get_match_stats(soup_name):
@@ -156,67 +147,17 @@ def get_section_rally_stats(soup_name):
 
 def get_overall_score(soup_name):
 
-    scores = soup_name.find_all("div", class_="result-content")
-
-    p1_score = []
-    p2_score = []
+    score = soup_name.find("div", class_="scoring block")
+    print(len(score))
 
 
-    for score in scores:
-
-        if 'team-a-content' in score.get('class', []):
-            p1_sets_div = score.find("div", class_="group-sets")
-
-            p1_sets_results = p1_sets_div.find_all("div", class_="set")
-
-            for p1_set in p1_sets_results:
-                if "tie-break" in p1_set.get("class", []):
-                    
-                    set_score = f"{p1_set.contents[0].strip()} ({p1_set.contents[1].text.strip()})"
-                    p1_score.append(set_score)
-                
-                else:
-                    set_score = p1_set.text.strip()
-                    p1_score.append(set_score)
-
-
-        else:
-            p2_sets_div = score.find("div", class_="group-sets")
-
-            p2_sets_results = p2_sets_div.find_all("div", class_="set")
-
-            for p2_set in p2_sets_results:
-                if "tie-break" in p2_set.get("class", []):
-                    
-                    set_score = f"{p2_set.contents[0].strip()} ({p2_set.contents[1].text.strip()})"
-                    p2_score.append(set_score)
-                
-                else:
-                    set_score = p2_set.text.strip()
-                    p2_score.append(set_score)
         
-    
-    return [p1_score, p2_score]
 
-def get_match_winner(soup_name):
-    
-    players_soup = soup_name.find_all("div", class_="result-content")
 
-    for player in players_soup:
-        if "winner" in player.get("class", []):
-            player_name = player.find("div", {"class": "player-name"}).text.strip()
+
+
     
     
-    return player_name
-
-def get_score_into_final_format(score:list) -> list:
-    """Returns the score into a formatted list."""
-
-  
-    formatted_scores = [f"{s1}-{s2}" for s1, s2 in zip(*score)]
-
-    return formatted_scores
-
 
 
 def get_year_data():
@@ -231,11 +172,12 @@ def get_year_data():
             found_matches += 1
     
     return found_matches
+            
+    
+
 
     
 if __name__ == "__main__":
     # match_data = get_match_data_atp_infosys_stats(2018, "127")
     # match_stats = match_data.find("div", class_="rfk-stat-section")
-    # get_year_data()
-
-    load_match_webpage(2018, "003")
+    get_year_data()
