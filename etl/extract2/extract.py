@@ -1,20 +1,13 @@
 """This script will retrieve data from Roland Garros website."""
-
-import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-import time
-from datetime import datetime
-import json
-import time
-import random
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.chrome.options import Options
-from selenium import webdriver
 import time
-import asyncio
+import json
+import random
+from selenium.common.exceptions import NoSuchElementException
+
 
 def load_match_webpage(year: int, match_number: str):
     """Accesses the webpage of a Roland Garros match and scrapes the data."""
@@ -28,7 +21,7 @@ def load_match_webpage(year: int, match_number: str):
 
     try:
         BASE_URL = "https://www.rolandgarros.com/en-us/matches/"
-        response = f"{BASE_URL}{year}/SM{match_number}"
+        response = f"{BASE_URL}{year}/SD{match_number}"
 
         driver.get(response)
 
@@ -267,7 +260,7 @@ def get_year_data(max_retries=5, retry_delay=3):
         matches_dict = {}
 
         for match in matches:
-            match_code = f"SM{match}"
+            match_code = f"SD{match}"
             
             success = False
             attempts = 0
@@ -296,7 +289,7 @@ def get_year_data(max_retries=5, retry_delay=3):
                         print(f"⚠️ Max retries reached. Skipping {match_code}")
                         matches_dict[match_code] = {"error": str(e)}
 
-        year_filename = f"RG_{year}.json"
+        year_filename = f"RG_WTA_{year}.json"
         save_to_json(matches_dict, year_filename)
         print(f"📁 Data for {year} saved to {year_filename}")
 
@@ -306,6 +299,52 @@ def save_to_json(data, filename):
     with open(filename, "w") as f:
         json.dump(data, f, indent=4)
     print(f"✅ Data saved to {filename}")
+
+def rounds_mapping():
+    tournament_map = {
+    "Final": ["SM001"],
+    "Semifinals": ["SM002", "SM003"],
+    "Quarterfinals": ["SM004", "SM005", "SM006", "SM007"],
+    "Round of 16": [
+        "SM008", "SM009", "SM010", "SM011",
+        "SM012", "SM013", "SM014", "SM015"
+    ],
+    "Round of 32": [
+        "SM016", "SM017", "SM018", "SM019",
+        "SM020", "SM021", "SM022", "SM023",
+        "SM024", "SM025", "SM026", "SM027",
+        "SM028", "SM029", "SM030", "SM031"
+    ],
+    "Round of 64": [
+        "SM032", "SM033", "SM034", "SM035",
+        "SM036", "SM037", "SM038", "SM039",
+        "SM040", "SM041", "SM042", "SM043",
+        "SM044", "SM045", "SM046", "SM047",
+        "SM048", "SM049", "SM050", "SM051",
+        "SM052", "SM053", "SM054", "SM055",
+        "SM056", "SM057", "SM058", "SM059",
+        "SM060", "SM061", "SM062", "SM063"
+    ],
+    "Round of 128": [
+        "SM064", "SM065", "SM066", "SM067",
+        "SM068", "SM069", "SM070", "SM071",
+        "SM072", "SM073", "SM074", "SM075",
+        "SM076", "SM077", "SM078", "SM079",
+        "SM080", "SM081", "SM082", "SM083",
+        "SM084", "SM085", "SM086", "SM087",
+        "SM088", "SM089", "SM090", "SM091",
+        "SM092", "SM093", "SM094", "SM095",
+        "SM096", "SM097", "SM098", "SM099",
+        "SM100", "SM101", "SM102", "SM103",
+        "SM104", "SM105", "SM106", "SM107",
+        "SM108", "SM109", "SM110", "SM111",
+        "SM112", "SM113", "SM114", "SM115",
+        "SM116", "SM117", "SM118", "SM119",
+        "SM120", "SM121", "SM122", "SM123",
+        "SM124", "SM125", "SM126", "SM127"
+    ]
+}
+
 
 
     

@@ -1,0 +1,22 @@
+{
+    "Rafael Nadal": {
+        "Age": "(1986/06/03)",
+        "Weight": "187 lbs (85kg)",
+        "Height": "6'1\" (185cm)",
+        "Turned pro": "2001",
+        "Country": "Spain",
+        "Birthplace": "Manacor, Mallorca, Spain",
+        "Plays": "Left-Handed, Two-Handed Backhand",
+        "Coach": "Carlos Moya, Marc Lopez, Gustavo Marcaccio"
+    },
+    "Roger Federer": {
+        "DOB": "1981/08/08",
+        "Weight": "187 lbs (85kg)",
+        "Height": "6'1\" (185cm)",
+        "Turned pro": "1998",
+        "Country": "Switzerland",
+        "Birthplace": "Basel, Switzerland",
+        "Plays": "Right-Handed, One-Handed Backhand",
+        "Coach": "Ivan Ljubicic, Severin Luthi"
+    }
+}
