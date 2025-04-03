@@ -18,5 +18,85 @@
         "Birthplace": "Basel, Switzerland",
         "Plays": "Right-Handed, One-Handed Backhand",
         "Coach": "Ivan Ljubicic, Severin Luthi"
+    },
+    "Marin Cilic": {
+        "Age": "36 (1988/09/28)",
+        "Weight": "196 lbs (89kg)",
+        "Height": "6'6\" (198cm)",
+        "Turned pro": "2005",
+        "Country": "Croatia",
+        "Birthplace": "Medjugorje, Bosnia-Herzegovina",
+        "Plays": "Right-Handed, Two-Handed Backhand",
+        "Coach": "Vilim Visak"
+    },
+    "Alexander Zverev": {
+        "Age": "27 (1997/04/20)",
+        "Weight": "198 lbs (90kg)",
+        "Height": "6'6\" (198cm)",
+        "Turned pro": "2013",
+        "Country": "Germany",
+        "Birthplace": "Hamburg, Germany",
+        "Plays": "Right-Handed, Two-Handed Backhand",
+        "Coach": "Alexander Zverev Sr."
+    },
+    "Grigor Dimitrov": {
+        "Age": "33 (1991/05/16)",
+        "Weight": "178 lbs (81kg)",
+        "Height": "6'3\" (191cm)",
+        "Turned pro": "2008",
+        "Country": "Bulgaria",
+        "Birthplace": "Haskovo, Bulgaria",
+        "Plays": "Right-Handed, One-Handed Backhand",
+        "Coach": "Jamie Delgado, Daniel Vallverdu"
+    },
+    "Juan Martin del Potro": {
+        "DOB": "1988/09/23",
+        "Weight": "214 lbs (97kg)",
+        "Height": "6'6\" (198cm)",
+        "Turned pro": "2005",
+        "Country": "Argentina",
+        "Birthplace": "Tandil, Argentina",
+        "Plays": "Right-Handed, Two-Handed Backhand",
+        "Coach": ""
+    },
+    "Dominic Thiem": {
+        "Age": "31 (1993/09/03)",
+        "Weight": "174 lbs (79kg)",
+        "Height": "6'1\" (185cm)",
+        "Turned pro": "2011",
+        "Country": "Austria",
+        "Birthplace": "Wiener Neustadt, Austria",
+        "Plays": "Right-Handed, One-Handed Backhand",
+        "Coach": "Wolfgang Thiem"
+    },
+    "Kevin Anderson": {
+        "DOB": "1986/05/18",
+        "Weight": "208 lbs (94kg)",
+        "Height": "6'8\" (203cm)",
+        "Turned pro": "2007",
+        "Country": "South Africa",
+        "Birthplace": "Johannesburg, South Africa",
+        "Plays": "Right-Handed, Two-Handed Backhand",
+        "Coach": "Diego Moyano, Jay Bosworth"
+    },
+    "John Isner": {
+        "DOB": "1985/04/26",
+        "Weight": "238 lbs (108kg)",
+        "Height": "6'10\" (208cm)",
+        "Turned pro": "2007",
+        "Country": "United States",
+        "Birthplace": "Greensboro, NC, USA",
+        "Plays": "Right-Handed, Two-Handed Backhand",
+        "Coach": "Philip Farmer"
+    },
+    "David Goffin": {
+        "Age": "34 (1990/12/07)",
+        "Weight": "154 lbs (70kg)",
+        "Height": "5'11\" (180cm)",
+        "Turned pro": "2009",
+        "Country": "Belgium",
+        "Birthplace": "Rocourt, Belgium",
+        "Plays": "Right-Handed, Two-Handed Backhand",
+        "Coach": "Jean Demeroutis"
     }
 }

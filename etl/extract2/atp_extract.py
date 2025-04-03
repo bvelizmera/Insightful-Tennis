@@ -1,5 +1,7 @@
 """This script will scrap ATP tennis players details. """
 
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 from bs4 import BeautifulSoup
 from requests import get
 from selenium import webdriver
@@ -7,7 +9,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from fake_useragent import UserAgent
 import time
-import os
 import json
 
 
@@ -85,53 +86,126 @@ def get_player_link(row):
 
         return {name : ref}
 
-def get_players_info(players_list):
-    """Returns all players info."""
+
+def get_players_info(players_list, max_retries=3):
+    """Returns all players info, retrying up to `max_retries` times if an error occurs."""
     players = []
 
     for player in players_list:
-        players.append(get_player_info(player))
-    
+        success = False
+        attempt = 0
+
+        while not success and attempt < max_retries:
+            try:
+                player_info = get_player_info(player)
+                players.append(player_info)
+                success = True  # Break the loop if successful
+            except Exception as e:
+                attempt += 1
+                print(
+                    f"Error fetching data for {list(player.keys())[0]} (attempt {attempt} of {max_retries}): {e}")
+                time.sleep(2)  # Adding a small delay before retrying
+
+                if attempt == max_retries:
+                    print(
+                        f"Failed to get data for {list(player.keys())[0]} after {max_retries} attempts.")
+
     return players
 
 
 def get_player_info(player_dict):
-
+    """Fetches individual player details."""
     options = Options()
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
 
     driver = webdriver.Chrome(options=options)
-    
+
     link = list(player_dict.values())[0]
     name = list(player_dict.keys())[0]
 
     BASE_URL = f"https://www.atptour.com/{link}"
 
     driver.get(BASE_URL)
-    time.sleep(5)
-    button = driver.find_element(By.ID, "onetrust-reject-all-handler")
-    button.click()
-    time.sleep(3)
-    website_source = driver.page_source
+    WebDriverWait(driver, 5).until(
+        EC.presence_of_element_located((By.TAG_NAME, "body")))
 
+    try:
+        button = driver.find_element(By.ID, "onetrust-reject-all-handler")
+        button.click()
+        time.sleep(3)
+    except:
+        pass  # If the button isn't found or clickable, just proceed
+
+    website_source = driver.page_source
     player_soup = BeautifulSoup(website_source, "html.parser")
+
     if player_soup:
         details = player_soup.find("div", class_="personal_details")
         content = details.find("div", class_="pd_content")
         sections = content.find_all("li")
-        filtered_li = [li for li in sections  if "socialLink.SocialId" not in str(li) or "Follow player" not in str(li)]
+        filtered_li = [li for li in sections if "socialLink.SocialId" not in str(
+            li) or "Follow player" not in str(li)]
         player_details = {}
 
         for element in filtered_li:
             if not element.find("div", class_="social") and not element.find("a"):
                 detail = element.find_all("span")
                 player_details[detail[0].text.strip()] = detail[1].text.strip()
-        
+
         driver.quit()
+
+        return {name: player_details}
+
+
+
+# def get_players_info(players_list):
+#     """Returns all players info."""
+#     players = []
+
+#     for player in players_list:
+#         players.append(get_player_info(player))
+    
+#     return players
+
+
+# def get_player_info(player_dict):
+
+#     options = Options()
+#     options.add_argument("--no-sandbox")
+#     options.add_argument("--disable-dev-shm-usage")
+
+#     driver = webdriver.Chrome(options=options)
+    
+#     link = list(player_dict.values())[0]
+#     name = list(player_dict.keys())[0]
+
+#     BASE_URL = f"https://www.atptour.com/{link}"
+
+#     driver.get(BASE_URL)
+#     time.sleep(5)
+#     button = driver.find_element(By.ID, "onetrust-reject-all-handler")
+#     button.click()
+#     time.sleep(3)
+#     website_source = driver.page_source
+
+#     player_soup = BeautifulSoup(website_source, "html.parser")
+#     if player_soup:
+#         details = player_soup.find("div", class_="personal_details")
+#         content = details.find("div", class_="pd_content")
+#         sections = content.find_all("li")
+#         filtered_li = [li for li in sections  if "socialLink.SocialId" not in str(li) or "Follow player" not in str(li)]
+#         player_details = {}
+
+#         for element in filtered_li:
+#             if not element.find("div", class_="social") and not element.find("a"):
+#                 detail = element.find_all("span")
+#                 player_details[detail[0].text.strip()] = detail[1].text.strip()
+        
+#         driver.quit()
         
 
-        return {name:player_details}
+#         return {name:player_details}
 
 
 def save_player_details(player_details):
